@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <array>
 
+#include <random>
+
 /* This is xoshiro256** 1.0, one of our all-purpose, rock-solid generators. 
    It has excellent (sub-ns) speed, a state (256 bits) that is large enough 
    for any parallel application, and it passes all tests we are aware of.
@@ -15,21 +17,31 @@ static inline uint64_t rotl( const uint64_t& x, const int& k ) {
   return (x << k) | (x >> (64 - k));
 }
 
-static std::array< uint64_t , 4> s { 1234567890 , 9876543210 , 1234567890, 9876543210 };
+static std::mt19937 rng(42);
 
-uint64_t xoshiro()
+class xoshiro
 {
-  const uint64_t lResult = rotl(s[1] * 5, 7) * 9;
-  const uint64_t lTemporary = s[1] << 17;
+private:
+  std::array< uint64_t , 4> s;
 
-  s[2] ^= s[0];
-  s[3] ^= s[1];
-  s[1] ^= s[2];
-  s[0] ^= s[3];
+public:
+  xoshiro() : s{ rng() , rng() , rng() , rng() }
+  {}
 
-  s[2] ^= lTemporary;
-  s[3] = rotl(s[3], 45);
+  inline uint64_t operator() ()
+  {
+    const uint64_t lResult = rotl(s[1] * 5, 7) * 9;
+    const uint64_t lTemporary = s[1] << 17;
 
-  return lResult;
-}
+    s[2] ^= s[0];
+    s[3] ^= s[1];
+    s[1] ^= s[2];
+    s[0] ^= s[3];
 
+    s[2] ^= lTemporary;
+    s[3] = rotl(s[3], 45);
+
+    return lResult;
+  }
+
+};
