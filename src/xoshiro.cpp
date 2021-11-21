@@ -1,6 +1,5 @@
 #include <stdint.h>
 #include <array>
-
 #include <random>
 
 /* This is xoshiro256** 1.0, one of our all-purpose, rock-solid generators. 
@@ -22,7 +21,7 @@ static std::mt19937 rng(42);
 class xoshiro
 {
 private:
-  std::array< uint64_t , 4> s;
+  std::array< uint64_t , 4 > s;
 
 public:
   xoshiro() : s{ rng() , rng() , rng() , rng() }

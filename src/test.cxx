@@ -1,4 +1,5 @@
 #include "xoshiro.cpp"
+#include "xorchain.cpp"
 #include "utils.cpp"
 
 /* ===== For TestU01 ===== */
@@ -15,36 +16,35 @@ extern "C"
 #include <iomanip>
 
 
+FnPtr64 lGen1 = [](){ static xoshiro x; return x(); };
+FnPtr64 lGen2 = [](){ static xoshiro x; return x(); };
+
+FnPtr64 lGen3 = [](){ static xorchain<4> x( lGen1 , lGen2 ); x(); return x[1]; };
+
+
 int main()
 {
     char* lName = (char*)( "Xorshiro**" );
 
-    xoshiro lGen , lGen2;
 
     // for( int i(0) ; i!=100 ; ++i ) std::cout << std::hex << std::setw(16) << lGen() << " " << std::setw(16) << lGen2() << std::endl;
 
-//    FnPtr32 lPtr = [](){ return interleave( xoshiro ); }; // interleave takes a function-pointer to the generator
-    // FnPtr32 lPtr = [](){ return low32( xoshiro ); };
-    // FnPtr32 lPtr = [](){ return high32( xoshiro ); };
-    // FnPtr32 lPtr = [](){ return rev32( low32( xoshiro ) ); };
-    // FnPtr32 lPtr = [](){ return rev32( high32( xoshiro ) ); };
-
+    FnPtr32 lPtr1 = [](){ return interleave( lGen3 ); }; // interleave takes a function-pointer to the generator
+    // FnPtr32 lPtr2 = [](){ return low32( lGen1 ); };
+    // FnPtr32 lPtr3 = [](){ return high32( lGen1 ); };
+    // FnPtr32 lPtr4 = [](){ return rev32( low32( lGen1 ) ); };
+    // FnPtr32 lPtr5 = [](){ return rev32( high32( lGen1 ) ); };
 
 /* ===== For TestU01 ===== */
-    // // Create TestU01 PRNG object for our generator
-    // unif01_Gen* gen = unif01_CreateExternGenBits( lName , lPtr );
-
-    // // Run the tests.
-    // bbattery_SmallCrush(gen);
-    // //bbattery_Crush(gen);
-
-    // // Clean up.
-    // unif01_DeleteExternGenBits(gen);
+    unif01_Gen* gen = unif01_CreateExternGenBits( lName , lPtr1 );
+    bbattery_SmallCrush(gen);
+    //bbattery_Crush(gen);
+    unif01_DeleteExternGenBits(gen);
 /* ===== For TestU01 ===== */
 
-if ( isatty(fileno(stdout)) ) {
-  throw std::runtime_error( "Output must not be the terminal for PractRand" );
-}
+// // if ( isatty(fileno(stdout)) ) {
+// //   throw std::runtime_error( "Output must not be the terminal for PractRand" );
+// }
 
 /* ===== For PractRand ===== */
     // constexpr size_t BUFFER_SIZE = ( 1<<6 );
@@ -59,3 +59,5 @@ if ( isatty(fileno(stdout)) ) {
 
     return 0;
 }
+
+
