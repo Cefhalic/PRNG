@@ -4,6 +4,6 @@ TESTBENCH = ./TestBench.vhd \
             ./Modelsim.udo
 
 INCLUDE_PATHS = \
-  ../RuflCore/firmware/hdl
+  ../../RuflCore/firmware/hdl
   
-include $(shell python -c "import os.path; print(os.path.abspath('../RuflCore/config/mfRules.mk'))")
+include $(shell python -c "import os.path; print(os.path.abspath('../../RuflCore/config/mfRules.mk'))")

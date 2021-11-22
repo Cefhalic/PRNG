@@ -22,8 +22,10 @@ ENTITY XorChain2 IS
 END XorChain2;
 
 ARCHITECTURE rtl OF XorChain2 IS
-  SIGNAL Pipeline : tArray( -1 to cChainLength ) := (OTHERS=>(OTHERS=>'0'));
+  SIGNAL Temp : tArray( -1 to N ) := (OTHERS=>(OTHERS=>'0'));
+  SIGNAL Pipeline : tArray( 0 to N-1 ) := (OTHERS=>(OTHERS=>'0'));
 BEGIN
-  Pipeline <= DataInA & ( Pipeline( -1 TO cChainLength-2 ) XOR Pipeline( 1 TO cChainLength ) ) & DataInB WHEN RISING_EDGE( Clk ); -- Clocked Logic
-  DataOut  <= Pipeline( 0 TO cChainLength-1 ); -- Mapping
+  DataOut  <= Pipeline( 0 TO N-1 ); -- Mapping
+  Temp     <= DataInA & Pipeline & DataInB; -- Mapping
+  Pipeline <= Temp( -1 TO N-2 ) XOR Temp( 1 TO N ) WHEN RISING_EDGE( Clk ); -- Clocked Logic
 END ARCHITECTURE rtl;

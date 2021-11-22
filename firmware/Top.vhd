@@ -22,7 +22,8 @@ USE WORK.DataTypes.ALL;
 ENTITY Top IS
   GENERIC( cChainLength : INTEGER := 5 );
   PORT( Clk     : IN  STD_LOGIC;
-        C : OUT tArray( 0 TO cChainLength-1 ) := (OTHERS=>(OTHERS=>'0')) );
+        C1 : OUT tArray( 0 TO cChainLength-1 ) := (OTHERS=>(OTHERS=>'0'));
+        C2 : OUT tArray( 0 TO cChainLength-1 ) := (OTHERS=>(OTHERS=>'0')) );
 END Top;
 
 ARCHITECTURE rtl OF Top IS
@@ -48,11 +49,11 @@ BEGIN
 
   XorChain1Instance : ENTITY work.XorChain1
   GENERIC MAP( cChainLength )
-  PORT MAP( Clk , A2 , B2 , C );
+  PORT MAP( Clk , A2 , B2 , C1 );
 
-  -- XorChain2Instance : ENTITY work.XorChain2
-  -- GENERIC MAP( cChainLength )
-  -- PORT MAP( Clk , A2 , B2 , C2 );
+  XorChain2Instance : ENTITY work.XorChain2
+  GENERIC MAP( cChainLength )
+  PORT MAP( Clk , A2 , B2 , C2 );
 
 
 END ARCHITECTURE rtl;
