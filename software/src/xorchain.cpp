@@ -14,7 +14,7 @@ private:
   FnPtr64 mGenA , mGenB;
 
 public:
-  xorchain( FnPtr64 aGenA , FnPtr64 aGenB ) : mGenA( aGenA ) , mGenB( aGenB )
+  xorchain( FnPtr64 aGenA , FnPtr64 aGenB ) : A{} , B{} , mGenA( aGenA ) , mGenB( aGenB )
   {}
 
   inline void operator() ()

@@ -1,18 +1,16 @@
+# Files for executables
+EXECUTABLE_SOURCES = $(sort $(wildcard src/*.cxx) )
+EXECUTABLE_OBJECT_FILES = $(patsubst src/%.cxx,%.o,${EXECUTABLE_SOURCES})
+EXECUTABLES = $(patsubst src/%.cxx,%.exe,${EXECUTABLE_SOURCES})
 
-
-.PHONY: all _all # clean _cleanall
+.PHONY: all _all
 
 default: all
-
-# clean: _cleanall
-# _cleanall:
-# 	rm -rf obj lib bin sbin elements
-
 all: _all
 build: _all
 buildall: _all
-_all: xoshirotest.exe PractRand/RNG_test.exe
-
+_all: PractRand/RNG_test.exe ${EXECUTABLES}
+	# /usr/bin/root-config
 
 
 TestU01/lib/libtestu01.a : 
@@ -36,5 +34,18 @@ PractRand/RNG_test.exe :
 	g++ -std=c++11 -o RNG_test.exe tools/RNG_test.cpp obj/*.o -O3 -Iinclude -pthread
 
 
-xoshirotest.exe : src/test.cxx | TestU01/lib/libtestu01.a 
-	g++ -std=c++11 -Wall -O3 $^ -ITestU01/include -LTestU01/lib -ltestu01 -lprobdist -lmylib -lm -o $@
+# /usr/bin/root-config:
+# 	sudo yum install -y epel-release
+# 	sudo yum install -y root
+
+
+.SECONDEXPANSION:
+%.o : src/%.cxx
+	g++ -march=native -std=c++11 -c ${FLAGS} -Iinclude -ITestU01/include -fPIC $< -o $@
+	# `root-config --cflags`
+
+-include $(EXECUTABLE_OBJECT_FILES:.o=.d)
+
+${EXECUTABLES}: %.exe : %.o | TestU01/lib/libtestu01.a 
+	g++ -march=native -std=c++11 -Wall -O3 $^ -LTestU01/lib -ltestu01 -lprobdist -lmylib -lm -lboost_program_options -o $@
+	# `root-config --glibs --libs`

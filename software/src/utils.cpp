@@ -1,7 +1,22 @@
+#pragma once
+
+extern "C"
+{
+#include "TestU01.h"
+};
+
 #include <stdint.h>
 
 using FnPtr32 = uint32_t (*)();
 using FnPtr64 = uint64_t (*)();
+using FnPtrDbl = double (*)();
+
+using FnTestSuite = void(*)( unif01_Gen* );
+
+
+static inline uint64_t rotl( const uint64_t& x, const int& k ) {
+  return (x << k) | (x >> (64 - k));
+}
 
 
 inline uint32_t rev32( uint32_t v )
@@ -25,31 +40,31 @@ inline uint32_t low32( const uint64_t& v )
   return (uint32_t)(v);
 }
 
-inline uint32_t interleave( FnPtr64 gen64 )
-{
-  static uint64_t lVal = 0;
-  static bool lPhase = false;
-  lPhase = not lPhase;
+// inline uint32_t interleave( FnPtr64 gen64 )
+// {
+//   static uint64_t lVal = 0;
+//   static bool lPhase = false;
+//   lPhase = not lPhase;
 
-  if( lPhase )
-  { 
-    lVal = (*gen64)();
-    return high32(lVal);
-  }
-  else
-  {
-    return low32(lVal);
-  }
-}
+//   if( lPhase )
+//   { 
+//     lVal = (*gen64)();
+//     return high32(lVal);
+//   }
+//   else
+//   {
+//     return low32(lVal);
+//   }
+// }
 
-// Utility wrapper taking a function pointer, rather than a uint32_t
-inline uint32_t high32( FnPtr64 gen64 )
-{
-  return high32( (*gen64)() );
-}
+// // Utility wrapper taking a function pointer, rather than a uint32_t
+// inline uint32_t high32( FnPtr64 gen64 )
+// {
+//   return high32( (*gen64)() );
+// }
 
-// Utility wrapper taking a function pointer, rather than a uint32_t
-inline uint32_t low32( FnPtr64 gen64 )
-{
-  return low32( (*gen64)() );
-}
+// // Utility wrapper taking a function pointer, rather than a uint32_t
+// inline uint32_t low32( FnPtr64 gen64 )
+// {
+//   return low32( (*gen64)() );
+// }

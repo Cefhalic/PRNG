@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <array>
-#include <random>
+#include "utils.cpp"
+// #include <random>
 
 /* This is xoshiro256** 1.0, one of our all-purpose, rock-solid generators. 
    It has excellent (sub-ns) speed, a state (256 bits) that is large enough 
@@ -12,11 +13,7 @@
    a 64-bit seed, we suggest to seed a splitmix64 generator and use its
    output to fill s. */
 
-static inline uint64_t rotl( const uint64_t& x, const int& k ) {
-  return (x << k) | (x >> (64 - k));
-}
-
-static std::mt19937 rng(42);
+// static std::mt19937 rng(42);
 
 class xoshiro
 {
@@ -24,7 +21,7 @@ private:
   std::array< uint64_t , 4 > s;
 
 public:
-  xoshiro() : s{ rng() , rng() , rng() , rng() }
+  xoshiro() : s{ 0x0123456789ABCDEF , 0xFEDCBA9876543210 , 0xF0E1D2C3B4A59687 , 0x78695A4B3C2D1E0F }
   {}
 
   inline uint64_t operator() ()
