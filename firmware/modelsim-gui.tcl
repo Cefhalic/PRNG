@@ -5,12 +5,12 @@ file mkdir modelsim_lib/msim
 vlib modelsim_lib/work
 vlib modelsim_lib/msim
 
-vlib modelsim_lib/msim/top
-vmap top modelsim_lib/msim/top
+vlib modelsim_lib/msim/lib
+vmap lib modelsim_lib/msim/lib
 
-vcom -2008 -work top PkgPRNG.vhd Xoshiro.vhd
+vcom -2008 -work lib PkgPRNG.vhd Xoshiro.vhd Top.vhd
 
-vsim -voptargs="+acc" top.Xoshiro256starstar
+vsim -t fs -voptargs="+acc" lib.Top
 set NumericStdNoWarnings 1
 set StdArithNoWarnings 1
 
@@ -22,8 +22,9 @@ if { ! [batch_mode] } {
   add wave *
 }
 
-force -freeze sim:/xoshiro256starstar/Clk 1 0, 0 1 -r 2
-run 1ns
+force -freeze sim:/Top/Clk   1 0fs, 0 1fs -r 2fs
+force -freeze sim:/Top/Reset 1 0fs, 0 1ps -r 2ps
+force -freeze sim:/Top/Pull  0 0fs , 1 14fs -r 20fs
+run 4ps
 
 wave zoom full
-
