@@ -34,6 +34,17 @@ PractRand/RNG_test.exe :
 	g++ -std=c++11 -o RNG_test.exe tools/RNG_test.cpp obj/*.o -O3 -Iinclude -pthread
 
 
+GJrand/lib/gjrand.a :
+	mkdir -p GJrand/{lib,lib-so}; \
+	cd GJrand; \
+	curl -OL  https://sourceforge.net/projects/gjrand/files/gjrand/gjrand.3.4.4/gjrand.3.4.4.tar.bz2; \
+	tar --strip-components=1 -xjf gjrand.3.4.4.tar.bz2 && rm gjrand.3.4.4.tar.bz2; \
+ 	cd src/; \
+	./compile; \
+	mv *.a ../lib; \
+	mv *.so ../lib-so
+
+
 # /usr/bin/root-config:
 # 	sudo yum install -y epel-release
 # 	sudo yum install -y root
@@ -46,6 +57,6 @@ PractRand/RNG_test.exe :
 
 -include $(EXECUTABLE_OBJECT_FILES:.o=.d)
 
-${EXECUTABLES}: %.exe : %.o | TestU01/lib/libtestu01.a 
+${EXECUTABLES}: %.exe : %.o | TestU01/lib/libtestu01.a GJrand/lib/gjrand.a
 	g++ -march=native -std=c++11 -Wall -O3 $^ -LTestU01/lib -ltestu01 -lprobdist -lmylib -lm -lboost_program_options -o $@
 	# `root-config --glibs --libs`

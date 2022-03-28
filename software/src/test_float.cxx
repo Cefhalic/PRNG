@@ -28,7 +28,6 @@ int main(int argc, char **argv)
     lDesc.add_options()
     ( "help",  po::bool_switch( &Help ) , "Produce help message" )
     ( "suite", po::value( &TestSuite )  , "Test-suite (0 = SmallCrush , 1 = Crush , 2 = BigCrush )" );
-    ;
 
     po::variables_map lVm;
     po::store( po::command_line_parser( argc , argv ).options( lDesc ).run() , lVm );
@@ -44,7 +43,7 @@ int main(int argc, char **argv)
     {
         /* ===== For TestU01 ===== */
         char* lName = (char*)( "Xorshiro256float" );
-        FnPtrDbl lPtr = [](){ return rev32( high32( x() ) ); };
+        FnPtrDbl lPtr = [](){ return (double)( x() ); };
 
         FnTestSuite lSuite[3] = { &bbattery_SmallCrush , &bbattery_Crush , &bbattery_BigCrush };
 

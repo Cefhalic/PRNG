@@ -29,7 +29,7 @@ int main(int argc, char **argv)
     ( "help",  po::bool_switch( &Help ) , "Produce help message" )
     ( "suite", po::value( &TestSuite )  , "Test-suite (0 = SmallCrush , 1 = Crush , 2 = BigCrush , 3 = PractRand stream)" )
     ( "bits",  po::value( &Bits )       , "Bits (0 = Low32 , 1 = High32 , 2 = Low32-reversed , 3 = High32-reversed)" );
-    ;
+    
 
     po::variables_map lVm;
     po::store( po::command_line_parser( argc , argv ).options( lDesc ).run() , lVm );

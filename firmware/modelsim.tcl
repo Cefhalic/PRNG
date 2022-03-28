@@ -4,30 +4,20 @@ file mkdir modelsim_lib/msim
 
 vlib modelsim_lib/work
 vlib modelsim_lib/msim
-# project new ./TestBits xoshiro256
 
-vcom -2008 "PkgPRNG.vhd"
-vcom -2008 "Xoshiro.vhd"
+vlib modelsim_lib/msim/top
+vmap top modelsim_lib/msim/top
 
-vsim -voptargs="+acc" work.Xoshiro256starstar
+vcom -2008 -work top PkgPRNG.vhd Xoshiro.vhd
+
+vsim -g/Xoshiro256starstar/debug=true  -voptargs="+acc" top.Xoshiro256starstar
 set NumericStdNoWarnings 1
 set StdArithNoWarnings 1
 
 if { ! [batch_mode] } {
   noview *
-  view wave
-  config wave -signalnamewidth 1
-
-  delete wave *
-  add wave *
 }
 
-force -freeze sim:/xoshiro256starstar/Clk 1 0, 0 {5 ns} -r 10
-run 1us
-
-if { ! [batch_mode] } {
-  wave zoom full
-} else {
-  exit
-}
+force -freeze sim:/xoshiro256starstar/Clk 1 0, 0 1 -r 2
+run -All
 

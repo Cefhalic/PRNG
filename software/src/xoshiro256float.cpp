@@ -24,7 +24,7 @@ private:
   std::array< uint64_t , 3 > t;
   
   struct FloatUtil { 
-    uint8_t   Exponent;
+    uint16_t  Exponent;
     uint128_t Mantissa;
   };
 
@@ -36,10 +36,10 @@ public:
   t{ 0 , 0 , 0 },
   u{ FloatUtil{0,0} , FloatUtil{0,0} , FloatUtil{0,0} , FloatUtil{0,0} , FloatUtil{0,0} , FloatUtil{0,0} , FloatUtil{0,0} }
   {    
-    for( uint32_t i( 7 ) ; i!= 0 ; --i ) (*this)();
+    for( uint32_t i( 7 ) ; i!= 0 ; --i ) (*this)(); // The first 7 clock-cycles are invalid
   }
 
-  inline float operator() ()
+  inline double operator() ()
   {
 
     for( uint32_t i( 7 ) ; i!= 0 ; --i )
@@ -47,11 +47,13 @@ public:
       uint32_t size = (1<<(7-i));
       u[i] = ( ( u[i-1].Mantissa >> (128-size) ) == 0 ) ? FloatUtil{ u[i-1].Exponent - size , u[i-1].Mantissa << size } : u[i-1];    
     }
-    u[0] = { 126 , (uint128_t)(s[1])<<64 | s[3] };
+    u[0] = { 1022 , (uint128_t)(s[3])<<64 | s[1] };
 
 
-    // int32_t lRes = ( (uint32_t)(u[7].Exponent) << 23 ) | ( t[2] >> 41 );
-    int64_t lRes = ( (uint64_t)(u[7].Exponent) << 55 ) | ( t[2] >> 11 );
+    //int32_t lRes = ( (uint32_t)(u[7].Exponent) << 23 ) | ( t[2] >> 41 );
+    int64_t lRes = ( (uint64_t)(u[7].Exponent) << 52 ) | ( t[2] >> 12 );
+
+    // std::cout << ( (uint64_t)(u[7].Exponent) << 52 ) << " | " << ( t[2] >> 12 ) << std::endl; 
 
     t = { s[1] * 5 , rotl( t[0] , 7 ) , t[1] * 9 };
 

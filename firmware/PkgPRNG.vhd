@@ -20,13 +20,13 @@ USE IEEE.NUMERIC_STD.ALL;
 PACKAGE PkgPRNG IS
   GENERIC( Width : INTEGER );
 
-  SUBTYPE tData IS UNSIGNED( Width-1 DOWNTO 0 );
+  SUBTYPE tData IS SIGNED( Width-1 DOWNTO 0 );
   
   TYPE tArray IS ARRAY( INTEGER RANGE <> ) OF tData; 
   
   FUNCTION "xor" ( Left , Right : tArray ) RETURN tArray;
 
-  FUNCTION Xoshiro ( signal s : tArray( 0 TO 3 ) ) RETURN tArray;
+  FUNCTION Xoshiro           ( signal s : tArray( 0 TO 3 ) ) RETURN tArray;
   FUNCTION StarStarScrambler ( signal t : tData ; signal s : tArray( 0 TO 2 ) ) RETURN tArray;
   FUNCTION PlusScrambler     ( signal ta : tData ; signal tb : tData ) RETURN tData;
 
