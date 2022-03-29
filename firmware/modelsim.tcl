@@ -1,16 +1,18 @@
 # ModelSim script for testing int64 prng
 
-file mkdir modelsim_lib/msim
+file mkdir ./modelsim/libs/msim
+cd modelsim
 
-vlib modelsim_lib/work
-vlib modelsim_lib/msim
+vlib libs/work
+vlib libs/msim
 
-vlib modelsim_lib/msim/lib
-vmap lib modelsim_lib/msim/lib
+vlib libs/msim/lib
+vmap lib libs/msim/lib
 
-vcom -2008 -work lib PkgPRNG.vhd Xoshiro.vhd
+vcom -2008 -work lib ../PkgPRNG.vhd \
+                     ../Xoshiro.vhd
 
-vsim -t fs -g/Xoshiro256starstar/debug=true  -voptargs="+acc" lib.Xoshiro256starstar
+vsim -t fs -g/Xoshiro256starstar/Debugging=true -voptargs="+acc" lib.Xoshiro256starstar
 set NumericStdNoWarnings 1
 set StdArithNoWarnings 1
 
