@@ -42,16 +42,17 @@ public:
   inline double operator() ()
   {
 
-    for( uint32_t i( 7 ) ; i!= 0 ; --i )
+    for( int32_t i( 6 ) ; i!=-1 ; --i )
     {
-      uint32_t size = (1<<(7-i));
-      u[i] = ( ( u[i-1].Mantissa >> (128-size) ) == 0 ) ? FloatUtil{ u[i-1].Exponent - size , u[i-1].Mantissa << size } : u[i-1];    
+      uint32_t size = (1<<(6-i));
+      u[i+1] = ( ( u[i].Mantissa >> (128-size) ) == 0 ) ? FloatUtil{ u[i].Exponent - size , u[i].Mantissa << size } : u[i];    
     }
-    u[0] = { 1022 , (uint128_t)(s[3])<<64 | s[1] };
+
+    u[0] = { 126 , (uint128_t)(s[3])<<64 | s[1] };
 
 
     //int32_t lRes = ( (uint32_t)(u[7].Exponent) << 23 ) | ( t[2] >> 41 );
-    int64_t lRes = ( (uint64_t)(u[7].Exponent) << 52 ) | ( t[2] >> 12 );
+    int64_t lRes = 0x3800000000000000 | ( (uint64_t)(u[7].Exponent) << 52 ) | ( t[2] >> 12 );
 
     // std::cout << ( (uint64_t)(u[7].Exponent) << 52 ) << " | " << ( t[2] >> 12 ) << std::endl; 
 
