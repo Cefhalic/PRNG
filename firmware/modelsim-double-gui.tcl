@@ -10,7 +10,7 @@ vlib libs/msim/lib
 vmap lib libs/msim/lib
 
 vcom -2008 -work lib ../PkgPRNG.vhd \
-                     ../Xoshiro256float.vhd
+                     ../Xoshiro.vhd
 
 vsim -t fs -voptargs="+acc" lib.Xoshiro256double
 set NumericStdNoWarnings 1
