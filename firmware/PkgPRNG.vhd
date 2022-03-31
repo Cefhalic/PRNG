@@ -33,7 +33,7 @@ PACKAGE PkgPRNG IS
   PROCEDURE Debug             ( CONSTANT Debugging : IN BOOLEAN ; SIGNAL t : IN tData );
 
 -- PRAGMA SYNTHESIS OFF
-  TYPE INTEGER_FILE IS FILE OF INTEGER;
+  TYPE INTEGER_FILE IS FILE OF STD_LOGIC_VECTOR;
   FILE OUT_FILE : INTEGER_FILE OPEN APPEND_MODE IS "../NamedPipe";
 -- PRAGMA SYNTHESIS ON
 
@@ -74,7 +74,7 @@ PACKAGE BODY PkgPRNG IS
 -- PRAGMA SYNTHESIS OFF
     IF Debugging THEN
       FOR i IN 1 TO (Width/32) LOOP
-        WRITE( OUT_FILE , TO_INTEGER( t( (32*i)-1 DOWNTO 32*(i-1) ) ) );
+        WRITE( OUT_FILE , STD_LOGIC_VECTOR( t( (32*i)-1 DOWNTO 32*(i-1) ) ) );
       END LOOP;
     END IF;
 -- PRAGMA SYNTHESIS ON
@@ -84,7 +84,93 @@ END PACKAGE BODY;
 -- =================================================================================================================================
 
 -- =================================================================================================================================
-PACKAGE PkgPRNG32 IS NEW WORK.PkgPRNG GENERIC MAP( Width => 32 );
+-- PACKAGE PkgPRNG32 IS NEW WORK.PkgPRNG GENERIC MAP( Width => 32 );
 PACKAGE PkgPRNG64 IS NEW WORK.PkgPRNG GENERIC MAP( Width => 64 );
 -- =================================================================================================================================
        
+
+
+
+
+LIBRARY IEEE;
+USE IEEE.STD_LOGIC_1164.ALL;
+USE IEEE.NUMERIC_STD.ALL;
+
+-- =================================================================================================================================
+PACKAGE PkgPRNGfp IS
+  GENERIC( ExponentWidth : INTEGER;
+           MantissaWidth : INTEGER );
+
+  CONSTANT Width : INTEGER := 1 + ExponentWidth + MantissaWidth;
+
+  SUBTYPE tFpData IS STD_LOGIC_VECTOR( Width-1 DOWNTO 0 );
+  TYPE tFpArray IS ARRAY( INTEGER RANGE <> ) OF tFpData; 
+   
+  TYPE tUtil IS RECORD
+    Exponent : INTEGER RANGE -128 TO 127;
+    Mantissa : SIGNED( 127 DOWNTO 0 );
+    Valid : BOOLEAN;
+  END RECORD;  
+  
+  TYPE tUtilArray IS ARRAY( NATURAL RANGE <> ) OF tUtil;
+  
+  PROCEDURE CountZeros( signal s : IN SIGNED( 127 DOWNTO 0 ) ; SIGNAL u : INOUT tUtilArray( 1 TO 7 ) );
+  
+  PROCEDURE ToIEEE754 ( signal u : IN tUtil ; SIGNAL t : IN SIGNED ; SIGNAL w : OUT tFpData );
+
+  -- PROCEDURE Debug             ( CONSTANT Debugging : IN BOOLEAN ; SIGNAL t : IN tData );
+
+-- -- PRAGMA SYNTHESIS OFF
+  -- TYPE INTEGER_FILE IS FILE OF INTEGER;
+  -- FILE OUT_FILE : INTEGER_FILE OPEN APPEND_MODE IS "../NamedPipe";
+-- -- PRAGMA SYNTHESIS ON
+
+END PACKAGE;
+-- =================================================================================================================================
+
+-- =================================================================================================================================
+PACKAGE BODY PkgPRNGfp IS
+  
+  PROCEDURE CountZeros ( signal s : IN SIGNED( 127 DOWNTO 0 ) ; SIGNAL u : INOUT tUtilArray( 1 TO 7 ) ) IS
+    VARIABLE uint : tUtilArray( 0 TO 7 );
+    VARIABLE Size : NATURAL;
+  BEGIN  
+    uint := tUtil'( 126 , s , TRUE ) & u; -- No shifts corresponds to an exponent of -1
+    FOR i IN 6 DOWNTO 0 LOOP
+      Size := 2**(6-i);
+      IF uint( i ).Mantissa( 127 DOWNTO ( 128 - Size ) ) = TO_SIGNED( 0 , Size ) THEN
+        uint( i+1 ) := ( uint( i ).Exponent - Size , SHIFT_LEFT( uint( i ).Mantissa , Size ) , uint( i ).Valid );
+      ELSE
+        uint( i+1 ) := uint( i );
+      END IF;
+    END LOOP;    
+    u <= uint( 1 TO 7 );
+  END PROCEDURE CountZeros;
+
+
+  PROCEDURE ToIEEE754 ( signal u : IN tUtil ; SIGNAL t : IN SIGNED ; SIGNAL w : OUT tFpData ) IS
+  BEGIN
+    IF Width = 64 THEN
+      IF u.Valid THEN
+        w <= "00111" & STD_LOGIC_VECTOR( TO_SIGNED( u.Exponent , 7 ) ) & STD_LOGIC_VECTOR( t( 63 DOWNTO 12 ) );
+      ELSE 
+        w <= x"7FFFFFFFFFFFFFFF";
+      END IF;
+    ELSE
+      IF u.Valid THEN
+        w <= "00" & STD_LOGIC_VECTOR( TO_SIGNED( u.Exponent , 7 ) ) & STD_LOGIC_VECTOR( t( 63 DOWNTO 41 ) );
+      ELSE 
+        w <= x"FFC00001F";
+      END IF;
+    END IF;
+  END PROCEDURE ToIEEE754;
+
+END PACKAGE BODY;
+-- =================================================================================================================================
+
+-- =================================================================================================================================
+-- PACKAGE PkgPRNGfloat  IS NEW WORK.PkgPRNGfp GENERIC MAP( ExponentWidth => 8  , MantissaWidth => 23 );
+PACKAGE PkgPRNGdouble IS NEW WORK.PkgPRNGfp GENERIC MAP( ExponentWidth => 11 , MantissaWidth => 52 );
+-- =================================================================================================================================
+
+
