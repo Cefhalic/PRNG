@@ -33,7 +33,7 @@ PACKAGE PkgPRNG IS
   PROCEDURE Debug             ( CONSTANT Debugging : IN BOOLEAN ; SIGNAL t : IN tData );
 
 -- PRAGMA SYNTHESIS OFF
-  TYPE INTEGER_FILE IS FILE OF STD_LOGIC_VECTOR;
+  TYPE INTEGER_FILE IS FILE OF INTEGER;
   FILE OUT_FILE : INTEGER_FILE OPEN APPEND_MODE IS "../NamedPipe";
 -- PRAGMA SYNTHESIS ON
 
@@ -74,7 +74,7 @@ PACKAGE BODY PkgPRNG IS
 -- PRAGMA SYNTHESIS OFF
     IF Debugging THEN
       FOR i IN 1 TO (Width/32) LOOP
-        WRITE( OUT_FILE , STD_LOGIC_VECTOR( t( (32*i)-1 DOWNTO 32*(i-1) ) ) );
+        WRITE( OUT_FILE , TO_INTEGER( t( (32*i)-1 DOWNTO 32*(i-1) ) ) );
       END LOOP;
     END IF;
 -- PRAGMA SYNTHESIS ON
@@ -95,6 +95,7 @@ PACKAGE PkgPRNG64 IS NEW WORK.PkgPRNG GENERIC MAP( Width => 64 );
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.NUMERIC_STD.ALL;
+USE WORK.PkgPRNG64.ALL; -- Use the definition of OUT_FILE
 
 -- =================================================================================================================================
 PACKAGE PkgPRNGfp IS
@@ -118,12 +119,7 @@ PACKAGE PkgPRNGfp IS
   
   PROCEDURE ToIEEE754 ( signal u : IN tUtil ; SIGNAL t : IN SIGNED ; SIGNAL w : OUT tFpData );
 
-  -- PROCEDURE Debug             ( CONSTANT Debugging : IN BOOLEAN ; SIGNAL t : IN tData );
-
--- -- PRAGMA SYNTHESIS OFF
-  -- TYPE INTEGER_FILE IS FILE OF INTEGER;
-  -- FILE OUT_FILE : INTEGER_FILE OPEN APPEND_MODE IS "../NamedPipe";
--- -- PRAGMA SYNTHESIS ON
+  PROCEDURE DebugFp ( CONSTANT Debugging : IN BOOLEAN ; SIGNAL t : IN tFpData );
 
 END PACKAGE;
 -- =================================================================================================================================
@@ -164,6 +160,17 @@ PACKAGE BODY PkgPRNGfp IS
       END IF;
     END IF;
   END PROCEDURE ToIEEE754;
+
+  PROCEDURE DebugFp ( CONSTANT Debugging : IN BOOLEAN ; SIGNAL t : IN tFpData ) IS
+  BEGIN
+-- PRAGMA SYNTHESIS OFF
+    IF Debugging THEN
+      FOR i IN 1 TO (Width/32) LOOP
+        WRITE( OUT_FILE , TO_INTEGER( SIGNED( t( (32*i)-1 DOWNTO 32*(i-1) ) ) ) );
+      END LOOP;
+    END IF;
+-- PRAGMA SYNTHESIS ON
+  END PROCEDURE; 
 
 END PACKAGE BODY;
 -- =================================================================================================================================

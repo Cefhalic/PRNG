@@ -54,7 +54,7 @@ BEGIN
           StarStarScrambler( s( 1 ) , t );         
           CountZeros( v ,  u );
           ToIEEE754( u(7) , t(2) , w );
-          -- Debug( Debugging , t( 2 ) );          
+          DebugFp( Debugging , w );          
         END IF;       
       END IF;
     END PROCESS;    
