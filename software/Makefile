@@ -1,9 +1,11 @@
 # Files for executables
 EXECUTABLE_SOURCES = $(sort $(wildcard src/*.cxx) )
-EXECUTABLE_OBJECT_FILES = $(patsubst src/%.cxx,%.o,${EXECUTABLE_SOURCES})
-EXECUTABLES = $(patsubst src/%.cxx,%.exe,${EXECUTABLE_SOURCES})
+EXECUTABLE_OBJECT_FILES = $(patsubst src/%.cxx,obj/%.o,${EXECUTABLE_SOURCES})
+EXECUTABLES = $(patsubst src/%.cxx,bin/%.exe,${EXECUTABLE_SOURCES})
 
-.PHONY: all _all
+DIRECTORIES = obj bin
+
+.PHONY: all _all clean _cleanall
 
 default: all
 all: _all
@@ -12,6 +14,9 @@ buildall: _all
 _all: PractRand/RNG_test.exe ${EXECUTABLES}
 	# /usr/bin/root-config
 
+clean: _cleanall
+_cleanall:
+	rm -rf ${DIRECTORIES}
 
 TestU01/lib/libtestu01.a : 
 	mkdir -p TestU01/lib-so; \
@@ -49,14 +54,16 @@ GJrand/lib/gjrand.a :
 # 	sudo yum install -y epel-release
 # 	sudo yum install -y root
 
+${DIRECTORIES}:
+	mkdir -p $@
 
 .SECONDEXPANSION:
-%.o : src/%.cxx
-	g++ -march=native -std=c++11 -c ${FLAGS} -Iinclude -ITestU01/include -fPIC $< -o $@
+obj/%.o : src/%.cxx | obj
+	g++ -march=native -std=c++11 -c ${FLAGS} -Iinclude -ITestU01/include -fPIC -MMD -MP $< -o $@
 	# `root-config --cflags`
 
 -include $(EXECUTABLE_OBJECT_FILES:.o=.d)
 
-${EXECUTABLES}: %.exe : %.o | TestU01/lib/libtestu01.a GJrand/lib/gjrand.a
-	g++ -march=native -std=c++11 -Wall -O3 $^ -LTestU01/lib -ltestu01 -lprobdist -lmylib -lm -lboost_program_options -o $@
+${EXECUTABLES}: bin/%.exe : obj/%.o | TestU01/lib/libtestu01.a GJrand/lib/gjrand.a bin
+	g++ -march=native -std=c++11 -MMD -MP -Wall -O3 $^ -LTestU01/lib -ltestu01 -lprobdist -lmylib -lm -lboost_program_options -o $@
 	# `root-config --glibs --libs`
