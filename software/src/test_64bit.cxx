@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "xoshiro.cpp"
+#include "Xoshiro64bit.cpp"
 #include "utils.cpp"
 
 #include "boost/program_options.hpp"
@@ -17,7 +17,7 @@ extern "C"
 #include <unistd.h>
 
 
-xoshiro x;
+Xoshiro64bit x;
 
 int main(int argc, char **argv)
 {

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "xoshiro256float.cpp"
+#include "XoshiroDouble.cpp"
 #include "utils.cpp"
 
 #include "boost/program_options.hpp"
@@ -29,7 +29,7 @@ extern "C"
 // ============================================================================================
 
 
-xoshiro256float lXoshiroDouble;
+XoshiroDouble lXoshiroDouble;
 
 int main(int argc, char **argv)
 {
