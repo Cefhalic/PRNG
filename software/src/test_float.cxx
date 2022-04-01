@@ -17,7 +17,19 @@ extern "C"
 #include <unistd.h>
 
 
-xoshiro256float x;
+// ============================================================================================
+// I CANNOT FOR THE F'ING LIFE OF ME WORK OUT WHY USING BOOST PROGRAM_OPTIONS WITH AN ARGUMENT
+// AND TESTU01's unif01_CreateExternGen01 WITHOUT GETTING A SEGFAULT IN THE TRASH-COLLECTION.
+// IF YOU:
+//  - Disable BOOST PROGRAM_OPTIONS altogether
+//  - Use BOOST PROGRAM_OPTIONS without passing an argument in and just use default values
+//  - Disable the TestU01 unif01_CreateExternGen01
+//  - Use unif01_CreateExternGenBits, instead of unif01_CreateExternGen01
+// THERE IS NO SEGFAULT.
+// ============================================================================================
+
+
+xoshiro256float lXoshiroDouble;
 
 int main(int argc, char **argv)
 {
@@ -37,13 +49,13 @@ int main(int argc, char **argv)
     {
         std::cout << lDesc << std::endl;
         exit(0);
-    }
+    }            
 
     if( TestSuite < 3 )
     {
         /* ===== For TestU01 ===== */
         char* lName = (char*)( "Xorshiro256float" );
-        FnPtrDbl lPtr = [](){ return (double)( x() ); };
+        FnPtrDbl lPtr = [](){ return lXoshiroDouble(); };
 
         FnTestSuite lSuite[3] = { &bbattery_SmallCrush , &bbattery_Crush , &bbattery_BigCrush };
 
@@ -60,5 +72,4 @@ int main(int argc, char **argv)
 
     return 0;
 }
-
 
