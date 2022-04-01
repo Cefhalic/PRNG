@@ -29,7 +29,6 @@ PACKAGE PkgPRNG IS
   PROCEDURE Xoshiro           ( SIGNAL s : INOUT tArray( 0 TO 3 ) );
   PROCEDURE StarStarScrambler ( SIGNAL s : IN tData ; SIGNAL t : INOUT tArray( 0 TO 2 ) );
   PROCEDURE PlusScrambler     ( SIGNAL sa : IN tData ; SIGNAL sb : IN tData ; SIGNAL t : OUT tArray( 0 TO 0 ) );
-
   PROCEDURE Debug             ( CONSTANT Debugging : IN BOOLEAN ; SIGNAL t : IN tData );
 
 -- PRAGMA SYNTHESIS OFF
@@ -84,8 +83,8 @@ END PACKAGE BODY;
 -- =================================================================================================================================
 
 -- =================================================================================================================================
--- PACKAGE PkgPRNG32 IS NEW WORK.PkgPRNG GENERIC MAP( Width => 32 );
-PACKAGE PkgPRNG64 IS NEW WORK.PkgPRNG GENERIC MAP( Width => 64 );
+-- PACKAGE PkgPRNG32bit IS NEW WORK.PkgPRNG GENERIC MAP( Width => 32 );
+PACKAGE PkgPRNG64bit IS NEW WORK.PkgPRNG GENERIC MAP( Width => 64 );
 -- =================================================================================================================================
        
 
@@ -95,7 +94,7 @@ PACKAGE PkgPRNG64 IS NEW WORK.PkgPRNG GENERIC MAP( Width => 64 );
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.NUMERIC_STD.ALL;
-USE WORK.PkgPRNG64.ALL; -- Use the definition of OUT_FILE
+USE WORK.PkgPRNG64bit.ALL; -- Use the definition of OUT_FILE
 
 -- =================================================================================================================================
 PACKAGE PkgPRNGfp IS
@@ -115,10 +114,8 @@ PACKAGE PkgPRNGfp IS
   
   TYPE tUtilArray IS ARRAY( NATURAL RANGE <> ) OF tUtil;
   
-  PROCEDURE CountZeros( signal s : IN SIGNED( 127 DOWNTO 0 ) ; SIGNAL u : INOUT tUtilArray( 1 TO 7 ) );
-  
+  PROCEDURE CountZeros( signal s : IN SIGNED( 127 DOWNTO 0 ) ; SIGNAL u : INOUT tUtilArray( 1 TO 7 ) );  
   PROCEDURE ToIEEE754 ( signal u : IN tUtil ; SIGNAL t : IN SIGNED ; SIGNAL w : OUT tFpData );
-
   PROCEDURE DebugFp ( CONSTANT Debugging : IN BOOLEAN ; SIGNAL t : IN tFpData );
 
 END PACKAGE;

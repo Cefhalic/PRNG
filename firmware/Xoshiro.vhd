@@ -15,9 +15,9 @@
 -- =================================================================================================================================
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
-USE WORK.PkgPRNG64.ALL;
+USE WORK.PkgPRNG64bit.ALL;
 
-ENTITY Xoshiro256starstar IS
+ENTITY Xoshiro64bit IS
   GENERIC( Seed : tArray( 0 TO 3 ) := ( x"01234567_89ABCDEF" , x"FEDCBA98_76543210" , x"F0E1D2C3_B4A59687" , x"78695A4B_3C2D1E0F" );
            Debugging : BOOLEAN := FALSE );
   PORT( Clk  : IN STD_LOGIC ;
@@ -26,9 +26,9 @@ ENTITY Xoshiro256starstar IS
         Reset : IN BOOLEAN := FALSE;
         ResetVal : IN tArray( 0 TO 3 ) := Seed
         );
-END Xoshiro256starstar;
+END Xoshiro64bit;
 
-ARCHITECTURE rtl OF Xoshiro256starstar IS
+ARCHITECTURE rtl OF Xoshiro64bit IS
   SIGNAL s : tArray( 0 TO 3 ) := Seed;
   SIGNAL t : tArray( 0 TO 2 ) := ( OTHERS => 64x"0" );
 BEGIN
@@ -54,7 +54,7 @@ END ARCHITECTURE rtl;
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.NUMERIC_STD.ALL;
-USE WORK.PkgPRNG64.ALL;
+USE WORK.PkgPRNG64bit.ALL;
 USE WORK.PkgPRNGdouble.ALL;
 
 
