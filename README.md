@@ -8,6 +8,7 @@
 * The software includes executables for testing the software emulations with TestU01 and PractRand.
 * In simulation, the firmware includes debugging output for testing with PractRand, or with TestU01 via the included executable.
 
-More details on usage can be found in the documentation: https://github.com/Cefhalic/PRNG/blob/master/documentation/documentation.pdf
-
 Details of the algorithms, their implementation, resource usage, performance, etc. may be found in the paper, which is currently still in preparation.
+
+Full details on how to use the firmware and software can be found in the documentation: https://github.com/Cefhalic/PRNG/blob/master/documentation/documentation.pdf
+
