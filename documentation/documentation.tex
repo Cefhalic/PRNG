@@ -45,6 +45,8 @@
 \item In simulation, the firmware includes debugging output for testing with PractRand, or with TestU01 via the included executable.
 \end{itemize}
 
+Discussion of the algorithms, their implementation, resource usage, performance, etc. may be found in the accompanying paper, which is currently still in preparation. This document is intended as a practical guide.
+
 \newpage
 
 \section{Getting the code}
@@ -146,7 +148,7 @@ It should be noted that due to pipelining, the first three values emitted after 
 \label{fig:Modelsim_GUI_output}
 \end{figure}
 
-\subsection{Xoshiro256double}
+\subsection{XoshiroDouble}
 
 The XoshiroDouble generator is a double-precision floating-point generator. As with Xoshiro64bit, the firmware implements the functional code as VHDL procedures for maximum code reuse but, again, the primary interface for most user will be through the VHDL entity:
 
@@ -229,7 +231,7 @@ To test the emulated xoshiro64bit generator with PractRand, run
 \begin{minipage}{1.0\textwidth}
 \centering
 \begin{lstlisting}[language=bash, label=lst:SwPractRand]
-./bin/test_bits.exe --suite 3 | ./PractRand/RNG_test.exe stdin64 
+./bin/test_64bit.exe --suite 3 | ./PractRand/RNG_test.exe stdin64 
 \end{lstlisting}
 \end{minipage}
 
@@ -270,7 +272,7 @@ To run the Xoshiro64bit testbench in Modelsim with the GUI, use the following in
 \begin{minipage}{1.0\textwidth}
 \centering
 \begin{lstlisting}[language=bash , label=lst:ModelsimGui]
-vsim -i -nolog -do modelsim-gui.tcl
+vsim -i -nolog -do scripts/modelsim-gui.tcl
 \end{lstlisting}
 \end{minipage}
 
@@ -281,7 +283,7 @@ Similarly for XoshiroDouble, the invocation is
 \begin{minipage}{1.0\textwidth}
 \centering
 \begin{lstlisting}[language=bash , label=lst:ModelsimDoubleGui]
-vsim -i -nolog -do modelsim-double-gui.tcl
+vsim -i -nolog -do scripts/modelsim-double-gui.tcl
 \end{lstlisting}
 \end{minipage}
 
@@ -305,7 +307,7 @@ A modelsim tcl script is provided to run the Xoshiro64bit indefinitely, dumping 
 \begin{minipage}{1.0\textwidth}
 \centering
 \begin{lstlisting}[language=bash, label=lst:ModelsimNoGui]
-vsim -i -nolog -do modelsim.tcl &
+vsim -i -nolog -do scripts/modelsim.tcl &
 \end{lstlisting}
 \end{minipage}
 
@@ -349,7 +351,7 @@ Similarly to Xoshiro64bit, the XoshiroDouble firmware includes `debugging' outpu
 \begin{minipage}{1.0\textwidth}
 \centering
 \begin{lstlisting}[language=bash, label=lst:ModelsimDoubleNoGui]
-vsim -i -nolog -do modelsim-double.tcl &
+vsim -i -nolog -do scripts/modelsim-double.tcl &
 \end{lstlisting}
 \end{minipage}
 
@@ -373,7 +375,7 @@ A Xilinx Vivado tcl script is provided to produce an example build with Xoshiro6
 \begin{minipage}{1.0\textwidth}
 \centering
 \begin{lstlisting}[language=bash, label=lst:Vivado]
-vivado -nolog -nojournal -source xilinx-vivado.tcl
+vivado -nolog -nojournal -source scripts/xilinx-vivado.tcl
 \end{lstlisting}
 \end{minipage} 
 
@@ -382,10 +384,18 @@ and similarly for testing XoshiroDouble:
 \begin{minipage}{1.0\textwidth}
 \centering
 \begin{lstlisting}[language=bash, label=lst:VivadoDouble]
-vivado -nolog -nojournal -source xilinx-vivado-double.tcl
+vivado -nolog -nojournal -source scripts/xilinx-vivado-double.tcl
 \end{lstlisting}
 \end{minipage} 
 
+These TCL scripts create a Vivado project in a `vivado' subdirectory, import the necessary files, run builds through synthesis and implementation for an XCKU15P-FFVA1156-2-e FPGA, and produce utilization reports and timing reports for a nominal clock-speed of 750MHz. Example output is shown in figure \ref{fig:VivadoOutput}.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{VivadoOutput.png}
+\caption{Example reports from Vivado implementation runs.}
+\label{fig:VivadoOutput}
+\end{figure}
 
 \newpage
 \section{GNU GENERAL PUBLIC LICENSE}
