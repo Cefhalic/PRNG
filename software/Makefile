@@ -58,12 +58,12 @@ ${DIRECTORIES}:
 	mkdir -p $@
 
 .SECONDEXPANSION:
-obj/%.o : src/%.cxx | obj
+obj/%.o : src/%.cxx | obj TestU01/lib/libtestu01.a 
 	g++ -march=native -std=c++11 -c ${FLAGS} -Iinclude -ITestU01/include -fPIC -MMD -MP $< -o $@
 	# `root-config --cflags`
 
 -include $(EXECUTABLE_OBJECT_FILES:.o=.d)
 
-${EXECUTABLES}: bin/%.exe : obj/%.o | TestU01/lib/libtestu01.a GJrand/lib/gjrand.a bin
+${EXECUTABLES}: bin/%.exe : obj/%.o | bin
 	g++ -march=native -std=c++11 -MMD -MP -Wall -O3 $^ -LTestU01/lib -ltestu01 -lprobdist -lmylib -lm -lboost_program_options -o $@
 	# `root-config --glibs --libs`
